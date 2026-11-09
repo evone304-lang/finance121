@@ -3,27 +3,23 @@
 以 PV(現值)、FV(未來值)、PMT(每期投入)為核心的目標導向理財試算網站。
 純靜態單頁,無需建置,資料只存在使用者自己的瀏覽器。
 
-## 資料夾結構(index.html 在最外層)
-```
-finance-planner/
-├── index.html
-├── _headers
-├── README.md
-├── LICENSE
-└── .gitignore
-```
+## 特色
+- 內建「30 秒學會怎麼用」教學與 PV / FV / PMT 白話說明
+- 五種預設目標:退休、購屋、教育、旅行、緊急預備金
+- 通膨調整、達成率、資金缺口、所需 PMT 與 PV
+- 資產成長曲線、報酬率情境分析、年度明細
+- ☕ 拿鐵因子:每天少花一點錢,看複利多強
+- 🏆 里程碑解鎖:25% / 50% / 75% / 100% 何時達成
 
-## 部署到 Cloudflare Pages
+## 如何使用
+1. 選一個目標(或自行輸入)。
+2. 填入目前資金 PV、每月投入 PMT、預期報酬率。
+3. 查看達成率、缺口與行動建議。
+4. 用拿鐵因子試試小額投入的長期效果。
 
-### 方式 A:直接拖曳(最快)
-1. Cloudflare Dashboard → Workers & Pages → Create → Pages → Upload assets
-2. 輸入專案名稱,把整個資料夾(或 zip)拖進去,按 Deploy。
-
-### 方式 B:GitHub 自動部署
-1. 把此資料夾內容推到 GitHub 儲存庫(index.html 要在儲存庫最外層)。
-2. Cloudflare → Workers & Pages → Create → Pages → Connect to Git,選該儲存庫。
-3. Framework preset: None;Build command: 留空;Build output directory: 留空(或填 `/`)。
-4. Save and Deploy。之後每次 push 都會自動更新。
+## 檔案結構
+index.html 在最外層,可直接拖曳到 Cloudflare Pages,或推到 GitHub 後用 Git 整合部署
+(Build command 與 Build output directory 皆留空)。
 
 ## 免責聲明
 本工具僅供試算與教育用途,不構成投資建議。報酬率為假設值,實際結果可能不同。

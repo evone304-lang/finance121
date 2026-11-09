@@ -36,6 +36,7 @@ input[type=text],input[type=number]{width:100%;padding:9px 10px;border:1px solid
 th,td{padding:7px 8px;border-bottom:1px solid var(--bd);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--mu);font-weight:600}
 svg{width:100%;height:auto;display:block}.note{font-size:12px;color:var(--mu)}
 details summary{cursor:pointer;color:var(--ac)}
+.guide summary{font-weight:700;cursor:pointer;font-size:16px}.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:12px}.steps div{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;font-size:13px}.steps b{display:block;margin-bottom:2px}.msg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}.ms{border:1px dashed var(--bd);border-radius:10px;padding:8px;opacity:.5}.ms.on{opacity:1;border:1px solid var(--ok);background:var(--ac2)}.ms span{font-size:26px;display:block}.ms small{display:block;color:var(--mu);font-size:11px}
 .f{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--mu);line-height:1.8}
 </style>
 </head>
@@ -43,6 +44,10 @@ details summary{cursor:pointer;color:var(--ac)}
 <div class="wrap">
 <h1>🎯 目標理財規劃器</h1>
 <p class="sub">設定一個財務目標,用 PV(現值)、FV(未來值)、PMT(每期投入)算出你離目標還有多遠,以及怎麼補足。</p>
+<div class="card guide"><details open><summary>📖 第一次來?30 秒學會怎麼用</summary>
+<div class="steps"><div><b>1️⃣ 選一個夢想</b>點上方的目標按鈕(退休、購屋…),或自己輸入名稱、金額、年限。</div><div><b>2️⃣ 填入現況</b>告訴我你現在有多少錢、每月能存多少、預期報酬率。</div><div><b>3️⃣ 看診斷與建議</b>右邊會即時顯示達成率、缺口、成長曲線與五種補救方法。</div><div><b>4️⃣ 玩玩拿鐵因子</b>試試「每天少喝一杯飲料」,看 20 年後差多少。</div></div>
+<div class="steps"><div><b>🌱 PV 現值</b>你現在手上已經有的錢,像一棵樹苗。</div><div><b>💧 PMT 每期投入</b>每個月固定存進去的錢,像每月澆水。</div><div><b>🌳 FV 未來值</b>時間到了,這些錢會長成多少,也就是你的目標。</div><div><b>📈 報酬率怎麼填?</b>定存約 1~2%、債券約 3~4%、股票型基金長期假設約 5~7%。這些只是假設,實際會波動,建議多試幾種。</div></div>
+<p class="note">小提醒:開啟「通膨調整」後,目標金額會隨物價變高,更貼近真實,建議保持開啟。</p></details></div>
 <div class="grid">
 <div>
 <div class="card">
@@ -63,6 +68,7 @@ details summary{cursor:pointer;color:var(--ac)}
 </div>
 </div>
 <div id="out"></div>
+<div class="card"><h2>☕ 拿鐵因子:小錢的複利威力</h2><label>每天少花(NT$)</label><input type="number" id="latte" min="0" step="10" value="100"><div id="latteOut" style="margin-top:10px"></div></div>
 </div>
 </div>
 <script>
@@ -111,6 +117,10 @@ function calc(){
   S.push(['④ 調降目標至 '+fmt(aff),'以今日購買力計算,這是目前條件能累積的金額。']);
   S.push(['⑤ 或一次投入 '+fmt(reqPV),'若有一筆閒置資金,現在一次投入這筆就能達標(即 PV)。']);
  }
+ const msIcon=['🥉','🥈','🥇','🏆'];
+ const msHtml=[.25,.5,.75,1].map((p,k)=>{let b=pv,m=0;while(b<T*p&&m<1200){b=b*(1+r)+pmt;m++}const ok=m<1200,over=ok&&m>n;return `<div class="ms ${ok&&!over?'on':''}"><span>${msIcon[k]}</span><b>${p*100}%</b><small>${ok?'第 '+(m/12).toFixed(1)+' 年'+(over?'(超過年限)':''):'100 年內未達成'}</small></div>`}).join('');
+ const lt=val('latte'),ex=lt*30,f2=FV(pv,pmt+ex,r,n);
+ $('latteOut').innerHTML=`每天少花 <b>${fmt(lt)}</b> ≈ 每月多投 <b>${fmt(ex)}</b><br>${y} 年後多出 <b style="color:var(--ok)">${fmt(f2-proj)}</b>,達成率變成 <b>${T>0?pct(f2/T):'-'}</b>。<br><span class="note">🕐 72 法則:報酬率 ${val('ret')}% 時,資金約 ${ra>0?(72/val('ret')).toFixed(1):'—'} 年翻一倍。</span>`;
  // 圖表
  const W=600,H=250,pad=40,ymax=Math.max(T,proj,PV_path(reqP))*1.08;
  function PV_path(p){return FV(pv,p,r,n)}
@@ -139,6 +149,7 @@ function calc(){
  <div class="kpi"><small>所需每月投入 PMT</small><b>${fmt(reqP)}</b></div>
  <div class="kpi"><small>所需一次投入 PV</small><b>${fmt(reqPV)}</b></div>
  <div class="kpi"><small>投入本金 / 投資收益</small><b>${fmt(pv+pmt*n)} / ${fmt(Math.max(0,proj-pv-pmt*n))}</b></div></div></div>
+ <div class="card"><h2>🏆 里程碑解鎖(依目前計畫)</h2><div class="msg">${msHtml}</div></div>
  <div class="card"><h2>資產成長曲線</h2>${svg}</div>
  <div class="card"><h2>💡 行動建議</h2><div class="sug">${S.map(s=>`<div><b>${s[0]}</b><span>${s[1]}</span></div>`).join('')}</div></div>
  <div class="card"><h2>報酬率情境分析</h2><div class="scroll"><table><tr><th>情境</th><th>預計 FV</th><th>達成率</th><th>所需 PMT</th></tr>${sc}</table></div></div>
